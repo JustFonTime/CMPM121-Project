@@ -21,6 +21,9 @@ public class EnemySpawner : MonoBehaviour
         selector.transform.localPosition = new Vector3(0, 130);
         selector.GetComponent<MenuSelectorController>().spawner = this;
         selector.GetComponent<MenuSelectorController>().SetLevel("Start");
+
+        // For testing
+        SpawnEnemy();
     }
 
     // Update is called once per frame
@@ -76,4 +79,41 @@ public class EnemySpawner : MonoBehaviour
         GameManager.Instance.AddEnemy(new_enemy);
         yield return new WaitForSeconds(0.5f);
     }
+
+    public void SpawnEnemy()
+    {
+        // create empty dictionary, stores the name of the enemy & the Enemy data
+        Dictionary<string, Enemy> enemy_types = new Dictionary<string, Enemy>();
+
+        // loads text asset from the enemies.json
+        var enemytext = Resources.Load<TextAsset>("enemies");
+
+        // Load a JToken from a string that contains JSON, to be iterated over
+        JToken jo = JToken.Parse(enemytext.text);
+
+        // Traverse our JToken so we can store data for 
+        foreach (var enemy in jo)
+        {
+            // Convert JSON data into an instance of Enemy
+            Enemy en = enemy.ToObject<Enemy>();
+
+            // Adds to our dictionary
+                //ex: enemy_types["zombies"] = *zombiesdata*
+            enemy_types[en.name] = en;
+        }      
+
+        /** Testing Deserialize
+
+            string j = JsonConvert.SerializeObject(enemy_types, Formatting.Indented);
+
+            Dictionary<string, Enemy> enemy_types_out = JsonConvert.DeserializeObject<Dictionary<string, Enemy>>(j);
+
+            foreach (string key in enemy_types_out.Keys)
+            {
+                Debug.Log("Key: " + key);
+            }
+
+        **/
+    }
 }
+
